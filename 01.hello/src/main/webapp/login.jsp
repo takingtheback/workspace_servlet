@@ -18,6 +18,7 @@
 </div>
 
 <h3>로그인</h3>
+<!-- url-pattern 확인 2.x web.xml -->
 <form action="login" method="post">
 	<input type="text" name="memberId" placeholder="아이디">
 	<input type="password" name="memberPw" placeholder="비밀번호">
