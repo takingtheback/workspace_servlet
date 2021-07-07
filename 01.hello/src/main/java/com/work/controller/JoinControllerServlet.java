@@ -1,12 +1,17 @@
 package com.work.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.work.service.MemberService;
 
 /**
  * Servlet implementation class JoinControllerServlet
@@ -17,7 +22,7 @@ public class JoinControllerServlet extends HttpServlet {
 	/**
 	 * ## jsp 응답페이지 이동하기
 	 * ## 서블릿 서비스 메서드 재정의 순서
-		1. 요청객체에 대한 한글 인코딩 설정됨
+		1. 요청객체에 대한 한글 인코딩 설정
 		2. 요청데이터 추출 : 요청페이지 로그인요청페이지 login.jsp name="변수명"
 		3. 요청데이터 검증
 		4. Model 요청의뢰
@@ -26,45 +31,79 @@ public class JoinControllerServlet extends HttpServlet {
 		7. 응답페이지 응답결과 보여주기 : jsp
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-			// 0.
+			// 0. 요청확인 되는지 확인
 			System.out.println("회원가입 요청"); 
-			// 1.
+			// 1. 요청객체에 대한 한글 인코딩 설정
 			request.setCharacterEncoding("utf-8");
-			
+			// 2. 요청데이터 추출 : 요청페이지 로그인요청페이지 login.jsp name="변수명"
 			String memberId = request.getParameter("memberId");
 			String memberPw = request.getParameter("memberPw");
 			String name = request.getParameter("name");
 			String mobile = request.getParameter("mobile");
 			String email = request.getParameter("email");
 			
-			System.out.println(
-			"memberId : " + memberId + "\n" +
-			"memberPw : " + memberPw + "\n" +
-			"name : " + name + "\n" +		
-			"mobile : " + mobile + "\n" +		
-			"email : " + email); 
+			Map<String, String> dtoMap = new HashMap <String, String>();
+			dtoMap.put("memberId", memberId);
+			dtoMap.put("memberPw", memberPw);
+			dtoMap.put("name", name);
+			dtoMap.put("mobile", mobile);
+			dtoMap.put("email", email);
 			
-			// 데이터 올바르지 않은 경우 처리
-			if(memberId == null || memberId.trim().length() == 0 ||
-				memberPw == null || memberPw.trim().length() == 0 || 
-				name == null || name.trim().length() == 0 || 
-				mobile == null || mobile.trim().length() == 0 || 
-				email == null || email.trim().length() == 0 ) {
-				// 5. Model 요청결과를 받아서 응답을 위한 설정
-				// 요청객체에 응답메세지 설정
-				request.setAttribute("message", "회원가입 실패 : 회원가입 정보를 올바르게 입력하시기 바랍니다.");
-				
-				// result.jsp forward 이동
-				RequestDispatcher nextView = request.getRequestDispatcher("result.jsp");
-				nextView.forward(request, response);
-				return; // 요청 서비스 완료됨, else가 있으면 필요없음
-	 		} else {
-	 			// 로그인 데이터 검증 완료 => 로그인 모델 요청 처리 진행
-	 			request.setAttribute("message", "회원가입 성공 : " + memberId);
-	 			
-	 			// result.jsp forward 이동
-	 			RequestDispatcher nextView = request.getRequestDispatcher("main.jsp");
-	 			nextView.forward(request, response);
-	 		}
-		}
+			System.out.println(dtoMap);
+			
+			ArrayList<String> errorList = new ArrayList<String>();
+						
+ 			if(memberId == null || memberId.trim().length() > 30 || memberId.trim().length() == 0) {
+ 				errorList.add("아이디는 필수입력항목이며 30자리 이내로 입력하시기 바랍니다.");
+ 			}
+ 			
+ 			if(memberPw == null || memberPw.trim().length() > 20 || memberPw.trim().length() == 0) {
+ 				errorList.add("비밀번호는 필수입력항목이며 20자리 이내로 입력하시기 바랍니다.");
+ 			}
+ 			
+ 			if(name == null || name.trim().length() > 20 || name.trim().length() == 0) {
+ 				errorList.add("이름은 필수입력항목이며 20자리 이내로 입력하시기 바랍니다.");
+ 			}
+			
+ 			if(mobile == null || mobile.trim().length() > 13 || mobile.trim().length() == 0) {
+ 				errorList.add("휴대폰은 필수입력항목이며 13자리 이내로 입력하시기 바랍니다.");
+ 			}
+ 			
+ 			if(email == null || email.trim().length() > 30 || email.trim().length() == 0) {
+ 				errorList.add("이메일은 필수입력항목이며 30자리 이내로 입력하시기 바랍니다.");
+ 			}
+			
+ 			
+ 			HashMap<String, String> errorMap = new HashMap<String, String>();
+			
+ 			if(memberId == null || memberId.trim().length() > 30 || memberId.trim().length() == 0) {
+ 				errorMap.put("memberId", "아이디는 필수입력항목이며 30자리 이내로 입력하시기 바랍니다.");
+ 			}
+ 			
+ 			if(memberPw == null || memberPw.trim().length() > 20 || memberPw.trim().length() == 0) {
+ 				errorMap.put("memberPw", "비밀번호는 필수입력항목이며 20자리 이내로 입력하시기 바랍니다.");
+ 			}
+ 			
+ 			if(name == null || name.trim().length() > 20 || name.trim().length() == 0) {
+ 				errorMap.put("name", "이름은 필수입력항목이며 20자리 이내로 입력하시기 바랍니다.");
+ 			}
+			
+ 			if(mobile == null || mobile.trim().length() > 13 || mobile.trim().length() == 0) {
+ 				errorMap.put("mobile", "휴대폰은 필수입력항목이며 13자리 이내로 입력하시기 바랍니다.");
+ 			}
+ 			
+ 			if(email == null || email.trim().length() > 30 || email.trim().length() == 0) {
+ 				errorMap.put("email", "이메일은 필수입력항목이며 30자리 이내로 입력하시기 바랍니다.");
+ 			}
+ 			
+ 			if(!errorList.isEmpty()) {
+ 				request.setAttribute("errorList", errorList);
+ 				request.setAttribute("errorMap", errorMap);
+ 				request.getRequestDispatcher("result.jsp").forward(request, response);
+				return;
+ 			}
+ 				
+ 		MemberService memberService = new MemberService();	
+ 		MemberService.addMember(dtoMap);
+ 		}
 	}
