@@ -10,5 +10,9 @@
 <h3>결과 메세지</h3>
 <!--  7. 응답페이지 응답결과 보여주기 : jsp -->
 <%= request.getAttribute("message") %>
+<hr>
+<%= request.getAttribute("errorList") %>
+<hr>
+<%= request.getAttribute("errorMap") %>
 </body>
 </html>
