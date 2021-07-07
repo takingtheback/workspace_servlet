@@ -68,7 +68,7 @@ public class MemberDao {
          factory.close(conn, stmt, rs);
       }
       
-      return null;
+      return "error";
    }
 
 

@@ -14,9 +14,28 @@ public class MemberService {
       dtoMap.put("grade", "G");
       dtoMap.put("mileage", String.valueOf(5000));
       int result = memberDao.insertMember(dtoMap);
+      
       System.out.println("addMember result : 1");
       return result;
    }
    
+   
+   /**
+	 * 로그인
+	 * @param memberId 아이디
+	 * @param memberPw 비밀번호
+	 * @return 회원등급, 미존재시 null
+	 */
+	public String loginGrade(String memberId, String memberPw) {
+		String grade = memberDao.login(memberId,memberPw);
+		if(grade != null) {
+			
+			return grade;
+		}
+		return null;
+	}
+
+
+
    
 }

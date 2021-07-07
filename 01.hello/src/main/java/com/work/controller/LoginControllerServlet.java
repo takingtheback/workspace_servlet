@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.work.service.MemberService;
+
 /**
  * Servlet implementation class LoginControllerServlet
  */
@@ -49,14 +51,23 @@ public class LoginControllerServlet extends HttpServlet {
 			// result.jsp forward 이동
 			RequestDispatcher nextView = request.getRequestDispatcher("result.jsp");
 			nextView.forward(request, response);
-			return; // 요청 서비스 완료됨, else가 있으면 필요없음
+			// return; // 요청 서비스 완료됨, else가 있으면 필요없음
  		} else {
  			// 로그인 데이터 검증 완료 => 로그인 모델 요청 처리 진행
- 			request.setAttribute("message", "로그인 성공 : " + memberId);
  			
- 			// result.jsp forward 이동
- 			RequestDispatcher nextView = request.getRequestDispatcher("main.jsp");
- 			nextView.forward(request, response);
+ 			MemberService memberService = new MemberService();
+ 			String grade = memberService.loginGrade(memberId,memberPw);
+ 			
+ 			if(grade.equals("G") || grade.equals("A") || grade.equals("S")) {
+ 				request.setAttribute("message", "로그인 성공 : " + memberId + " , 등급 : " + grade);
+ 				
+ 	 			RequestDispatcher nextView = request.getRequestDispatcher("main.jsp");
+ 	 			nextView.forward(request, response);
+ 			} else {
+ 				request.setAttribute("message", "로그인 실패 : 로그인 정보를 올바르게 입력하시기 바랍니다.");
+ 				RequestDispatcher nextView = request.getRequestDispatcher("result.jsp");
+ 				nextView.forward(request, response);
+ 			}
  		}
 	}
 }

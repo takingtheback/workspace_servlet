@@ -31,6 +31,7 @@ public class JoinControllerServlet extends HttpServlet {
       String mobile = request.getParameter("mobile");
       String email = request.getParameter("email");
       //System.out.println(memberId + ", " + memberPw + ", " + name + ", " + mobile + ", " + email);
+      
       Map<String, String> dtoMap = new HashMap<String, String>();
       dtoMap.put("memberId", memberId);
       dtoMap.put("memberPw", memberPw);
