@@ -5,22 +5,15 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
-<script type="text/javascript">
-	
-	
-</script>
+<title>MyInfo</title>
 </head>
 <body>
-<!-- Controller에서 내정보조회 응답결과 설정 -->
-<%
-	Member dto1 = new Member("user01", "password01", "홍길동", "aa", "bb", "cc", "G", 1000, null);
-	request.setAttribute("dto", dto1);
-%>
 
 <!-- Controller에서 설정한 응답결과를 jsp에서 사용하기 -->
 <%
+	
 	Member dto = (Member)request.getAttribute("dto");
+	System.out.println("myInfo dto :" + dto);
 %>
 <form action="#" method="post">
 	아이디 <input type="text" name="memberId" readonly="readonly" value="<%= dto.getMemberId() %>"> <br>
@@ -32,7 +25,6 @@
 	등급 <input type="text" name="grade" readonly="readonly" value="<%= dto.getGrade() %>"> <br>
 	마일리지 <input type="text" name="mileage" readonly="readonly" value="<%= dto.getMileage() %>"> <br>
 	담당자 <input type="text" name="manager" readonly="readonly" value="<%= dto.getManager() %>"> <br>
-
 </form>
 </body>
 </html>

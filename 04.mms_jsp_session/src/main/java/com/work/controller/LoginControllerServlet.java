@@ -59,10 +59,15 @@ public class LoginControllerServlet extends HttpServlet {
  		} else {
  			// 로그인 데이터 검증 완료 => 로그인 모델 요청 처리 진행
  			
+ 			// 혹시 있을 수도 있는 공백을 제거
+ 			memberId = memberId.trim();
+ 			memberPw = memberPw.trim();
+ 			
  			MemberService memberService = new MemberService();
  			String grade = memberService.loginGrade(memberId,memberPw);
  			
  			if(grade != null) {
+ 				// 세션로그인 처리
  				// request.setAttribute("message", "로그인 성공 : " + memberId + " , 등급 : " + grade);
  				HttpSession session = request.getSession(); // true 없으면 새로 생성, 존재하면 기존세션
  				session.setAttribute("memberId", memberId);

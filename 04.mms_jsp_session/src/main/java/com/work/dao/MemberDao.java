@@ -57,8 +57,7 @@ public class MemberDao {
          rs = stmt.executeQuery();
          
          if(rs.next()) {
-            String grade = rs.getString("grade");
-            return grade;
+        	 return rs.getString("grade");
          }
          
       } catch (SQLException e) {
@@ -67,8 +66,7 @@ public class MemberDao {
       } finally {
          factory.close(conn, stmt, rs);
       }
-      
-      return null;
+      return null;	// 아이디 미존재, 비밀번호 틀린경우, sql 수행예외발생시 null!
    }
 
 

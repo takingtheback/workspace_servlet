@@ -31,4 +31,14 @@
     <servlet-name>JoinControllerServlet</servlet-name>
     <url-pattern>/join</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>MyInfoControllerServlet</display-name>
+    <servlet-name>MyInfoControllerServlet</servlet-name>
+    <servlet-class>com.work.controller.MyInfoControllerServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>MyInfoControllerServlet</servlet-name>
+    <url-pattern>/myInfo</url-pattern>
+  </servlet-mapping>
 </web-app>
