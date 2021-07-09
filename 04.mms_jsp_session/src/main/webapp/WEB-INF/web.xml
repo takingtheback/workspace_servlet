@@ -41,4 +41,14 @@
     <servlet-name>MyInfoControllerServlet</servlet-name>
     <url-pattern>/myInfo</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>LogoutControllerServlet</display-name>
+    <servlet-name>LogoutControllerServlet</servlet-name>
+    <servlet-class>com.work.controller.LogoutControllerServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LogoutControllerServlet</servlet-name>
+    <url-pattern>/logout</url-pattern>
+  </servlet-mapping>
 </web-app>
