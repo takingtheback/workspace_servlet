@@ -1,0 +1,209 @@
+## -----------------------------------
+##  SERVLET & JSP 1일차 : 
+	-- 웹개발환경
+	-- CGI
+	-- 웹 프로젝트 구성요소 및 폴더 구조
+	-- 서블릿 API
+	-- 서블릿 작성
+## -----------------------------------
+
+-- 작업폴더 : C:\00.practice\workspace_servlet
+	>> 웹 개발 위한 eclipse 환경설정
+	>> 한글인코딩 : encoding, spelling, utf-8
+	>> Java : jdk1.8.202 (Install JRE), compiler 1.8
+	>> Server : tomcat8.5
+	
+	
+## Servlet & JSP
+-- 자바 기술을 활용한 웹어플리케이션 
+-- Web Site : static contents 서비스
+-- Web Application : static + dynamic contents	
+	
+	
+## CGI(Common Gateway Interface)
+-- dynamic contents(동적 서비스) 기술
+-- asp, php, c 등 
+-- 요청당 1개의 프로세스 단위 서비스 제공
+-- 단점 : 서버 부하 가중, 응답시간 오래걸림, 특정서버 종속 
+	
+	
+## 확장 CGI
+-- Servlet & JSP : JavaEE 기술 
+	=> Framework(Struts, Spring:open source) 
+	=> 전자정부표준프레임워크(eGov : Spring 기반)
+	=> 공공기관 개발자 필수 자격증 : 정보처리기사
+-- Java 기술 : 객체지향, 풍부한 라이브러리, 자바클래스를 재활용, 플랫폼(o/s, db, was) 독립적 장점 그대로 사용
+-- dynamic contents(동적 서비스) 기술, 
+-- 요청 시 Thread 기반으로 서비스 제공, in-processing(미리 메모리 로딩)
+-- 서버 부하 감소, 응답시간 빠름, 플랫폼(o/s, db, was) 독립적
+
+
+## MVC Pattern
+-- Model : 실무 부서
+	>> 업무로직처리(business:biz, service, process) : 실무 서비스 부서
+	>> Database : Data Access Object(DAO Pattern) : db crud => sql : 데이터운영실
+	>> Domain : DTO Pattern, Java Bean Component
+		값을 가지고 이동하는 객체(Data Transfer Object - DTO Pattern)
+		값을 가지고 있는 객체(Value Object), 
+		
+-- View : 화면
+	>> Presentation Logic
+	>> GUI : html(static), css, javascript(jquery 등 라이브러리)
+	>> GUI : JSP(static + dynamic)
+	
+-- Controller : 인포데스크 *****
+	>> 요청 ~ 응답 제어 
+	
+	>> 역할 순서: ***********
+	1. 요청 파악
+	2. 데이터 추출
+	3. 데이터 검증
+	4. 모델(Model) 요청의뢰(검증받은데이터)
+	5. Model로부터 응답결과받아서 응답위한 설정 : setAttribute(key, value)
+		>> 성공 응답
+		>> 실패 응답
+	6. 응답 페이지 이동 
+		>> forward : 기존 설정 데이터를 가지고 새로운 페이지 이동(기존 정보 유지)
+		>> redirect : 기존 설정 정보 버리고, 새로운 페이지 이동(기존 정보 사용 불가)
+		>> response.sendRedirect("url");
+	7. 응답페이지 응답결과 표시하기	
+
+## Model 1 Architecture
+-- 초기 웹어플리케이션 개발 : 
+-- Model : JavaBean Component
+-- View : JSP
+-- Controller : JSP
+
+
+## Model 2 Architecture (*****)
+-- 현재 : Enterprise Web Application
+-- Model : Java Class ( + JavaBean Component)
+-- View  : JSP ( + Action Tag, Custom Tag, JSTL, EL : Tag 기반 View)
+-- Controller : Servlet
+
+
+## Java Platform 기술
+-- JavaSE : jdk(sdk)-jvm, 자바문법, api 활용 : 실행환경 (JVM)
+-- JavaEE : Servlet & JSP, EJB, JDBC, JavaMail, JMS 등 => *.jar(라이브러리) api 활용 : 실행환경 (Container)
+-- JavaMe : 모바일 기기 => *.jar(라이브러리) api 활용
+
+
+## Web Server 
+-- http 프로토콜 기반의 웹 요청 처리 서버
+
+
+## Web Container
+-- Servlet & JSP 실행환경
+-- 메모리관리, 서블릿 라이프사이클 관리(메모리생성, 초기화, 서비스, 자원해제 일련과정)
+
+
+## Web Application 개발환경
+-- Web Server + Web Container = Tomcat 8.5
+
+
+## Servlet & JSP API
+-- apache-tomcat-8.5.63\lib> servlet-api.jar, jsp-api.jar
+-- javax.servlet : 서블릿 관련 공통 패키지
+-- javax.servlet.http : http 프로토콜에 특화된 서블릿 관련 서브 패키지
+
+
+## Servlet & JSP API Documentation
+-- tomcat.apache.org
+-- download : tomcat, api doc, taglibs
+
+
+## 주요 API
+-- Servlet interface
+-- GenericServlet abstract class
+-- HttpServlet abstract class 
+	=> extends >> HelloServlet class
+
+-- ServletRequest interface : 요청객체
+-- HttpServletRequest interface : http 요청객체
+
+-- ServletResponse interface : 응답객체
+-- HttpServletResponse interface : http 응답객체
+
+-- ServletConfig interface : 서블릿에 대한 환경설정 객체 (서블릿 마다 별도로 존재하는 객체)
+-- ServletContext interface : 웹어플리케이션에 대한 환경설정 단일 객체(웹어플리케이션에 속한 서블릿들을 위한 공유설정)
+
+-- ServletContextListner interface : 서버구동 및 중지시에 어플리케이션에 대한 초기화, 자원해제 제공위한 객체
+-- ServletContextEvent interface : 서버구동 및 중지시에 이벤트를 발생시키고 있는 웹어플리케이션객체 정보
+
+-- Cookie : 사용자 세션 정보 관련 객체
+-- HttpSession  : 사용자 세션 정보 관련 객체
+
+
+## Servlet Life Cycle 관련 메서드 : 초기화, 서비스, 자원해제
+-- init(ServletConfig config) : 초기화
+-- service(ServletRequest req, ServletResponse res) : 서비스
+-- destroy() : 자원해제
+
+
+## GenericServlet abstract class 
+-- init() : 중복 정의, 사용자 필요시 재정의 사용
+-- abstract void service(ServletRequest req, ServletResponse res)
+
+
+## HttpServlet abstract class
+-- 중복정의 : service(HttpServletRequest req, HttpServletResponse resp)
+-- 추가정의 : http method에 따른 요청방식에 매핑되는 서비스
+	>> doGet(HttpServletRequest req, HttpServletResponse resp)
+	>> doPost(HttpServletRequest req, HttpServletResponse resp)
+	>> doXxx(.., ..)
+	
+	
+## 서블릿 프로그래밍 규칙
+1. extends HttpServlet 
+2. 서비스 메서드 재정의
+	-- http method : form method="get|post"
+	-- get 요청서비스 : doGet() 재정의
+	-- post 요청서비스 : doPost() 재정의
+
+
+## 오류메세지
+-- HTTP 상태 405 – 허용되지 않는 메소드
+	>> 지원하지 않는 요청 get, post 요청시 서버 오류발생
+-- HTTP 상태 500 – 내부 서버 오류
+	>> 서버 로직 수행중에 발생되는 오류
+
+
+## JSP(Java Server Page)
+-- 동적 화면 구성을 위한 기술
+-- 구성요소 :
+	=> html tag, plain-text
+	=> jsp tag
+	=> action tag
+	=> jstl
+	=> el
+	=> custom tag
+
+
+## 웹 자원 경로 설정
+1. 서버 종속
+-- http://server-ip:port-no/context-path/sub-folder/요청자원.html
+-- http://server-ip:port-no/context-path/sub-folder/요청자원.jsp
+-- http://server-ip:port-no/context-path/url-pattern
+
+2. 컨텍스트이름 종속 : *** => 컨텍스트이름을 동적으로 가져와서 설정(해결책)
+-- /context-path/sub-folder/요청자원.html
+-- /context-path/sub-folder/요청자원.jsp
+-- /context-path/url-pattern
+
+3.
+-- sub-folder/요청자원.html
+-- sub-folder/요청자원.jsp
+-- url-pattern
+
+
+
+
+
+
+
+
+
+
+
+
+

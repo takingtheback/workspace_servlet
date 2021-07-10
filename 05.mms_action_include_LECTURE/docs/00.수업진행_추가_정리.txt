@@ -1,0 +1,477 @@
+## Web Application (Web Component)
+-- Java 기술 기반
+-- MVC Pattern
+
+-- Controller
+	>> 웹 요청 => 응답 제어
+	>> Servlet (http 프로토콜을 이용한 웹환경에서 동적 서비스를 위한 자바 클래스)
+
+-- View : 
+	>> html, css, javascript (static contents)
+	>> javascript 라이브러리(프레임워크) : 
+		=> prototype.js, 
+		=> jquery.js, jquery-ui.js, jquery-mobile.js
+		=> bootstrap.js
+		=> vue.js, react.js
+		=> node.js 
+		=> 등등
+		
+	>> JSP(Java Server Page)
+		=> dynamic contents(동적 서비스)를 제공하기 위한 view를 위한 자바 기술
+		=> (내부적으로는 서블릿 클래스로 서비스됨)
+		=> html, css, javascript + jsp tag, action tag, el, jstl
+		
+-- Model
+	>> Java class
+	>> DAO 
+		=> JDBC API : java.sql.* API
+	
+## Controller 프레임워크
+-- Struts Framework
+	>> Command Pattern
+	>> FrontController Pattern
+	
+-- Java EE (Enterprise Edition)
+	>> EJB (Enterprise Java Bean)
+		=> EJB Container
+		
+-- Open Source
+	>> Spring Framework : EJB를 대체하기위한 경량의 EJB
+	>> Configuration 환경설정 : xml 
+	>> 초기 프로젝트 생성 및 환경설정이 너무 복잡(힘듬)
+	
+	>> Spring Boot
+		=> 기존 Spring Framework의 환경설정을 간단하게 설정 가능
+		=> view : jsp(el, jstl)
+		=> db(model) : mybatis framework
+		
+		
+## url-pattern mapping
+-- 웹 서블릿 요청 uri
+	>> http://ip:port/context-name/com.work.controller.HelloControllerServlet
+	>> 겁나길죠 : 불편
+	>> 서버개발폴더구조 그대로 보여짐 : 보안 이슈
+	
+	>> 줄여볼까??
+	>> http://ip:port/context-name/hi
+	
+	>> eclipse 자동완성 형식
+	>> com.work.controller.HelloControllerServlet
+		=> 패키지명을 제외한 서블릿클래스이름을 기본 url-pattern이름으로 지정
+		
+	>> servlet 2.x 
+		=> 기본 web.xml 설정
+	
+	>> servlet 3.x
+		=> 서블릿클래스 선언문에 Annotation으로 설정됨
+	
+
+## post 요청
+http://localhost:8070/mms01/hi
+-- <form method="post">
+-- 요청데이터 전송
+	>> body 첨부되서 전송
+	>> 길이 제약 없음
+	>> 사용자 볼수 없음
+	>> 보안관련 데이터 전송 : 로그인, 회원가입, 주문 등
+
+## get 요청
+-- http://localhost:8070/mms01/hi ? message = hello+servlet
+-- 웹 기본 요청 방식 : get
+	>> 직접 url 입력 
+	>> <a> 링크 
+	>> <form method="get">
+	>> location.href="url"
+-- 요청데이터 전송
+	>> Query String 형식 : url ? key=value & key=value
+	>> 길이 제한, 사용자 볼수있음(보안 이슈)
+	>> 즐겨찾기, 검색 주로 사용
+
+## reload = true
+-- 개발시에 웹어플리케이션이 변경이 되는 경우에 자동으로 서버에 반영처림
+
+## 서블릿 라이프 사이클
+-- init()
+	>> 초기화 수행
+-- service()
+	>> 서비스 (반복)
+-- destory()
+	>> 자원해제 수행
+	>> 서비스중지, 기존서비스 변경
+
+
+## 서블릿 서비스 메서드 재정의 순서
+1. 요청객체에 대한 한글 인코딩 설정됨
+2. 요청데이터 추출
+3. 요청데이터 검증
+4. Model 요청의뢰
+5. 6. 7. 
+	=> 서블릿 코드 html 동적 작성
+	=> 응답을 위한 mime-type 및 한글인코딩 설정
+	=> 응답을 위한 출력스트림 생성
+	=> 출력스트림을 이용해서 동적 "<html>" 응답페이지 전송
+
+
+## JSP 학습후에 진행
+5. Model 요청결과를 받아서 응답을 위한 설정
+6. 응답페이지 이동 : jsp
+7. 응답페이지 응답결과 보여주기 : jsp
+
+## 요청객체에 대한 한글 인코딩 설정됨
+request.setCharacterEncoding("utf-8");
+
+## 요청데이터 추출방법
+-- HttpServletRequest, ServletRequest
+
+-- getParameter("key") : String
+-- getParameterValues("key") : String[]
+	>> checkbox
+	>> multiple로 지정한 select
+	
+-- getParameterMap() : Map<String, String[]>	
+
+
+## 웹 객체 범위
+-- 요청 scope
+
+-- 세션 scope
+
+-- 어플리케이션 scope
+
+
+## 응답페이지 이동
+1. forward
+	=> 기존 요청객체와 응답객체를 가지고 페이지 이동
+	=> 기존 정보 유지 가능
+	
+	RequestDispatcher  
+2. redirect
+	=> 기존 요청객체, 응답객체를 버리고
+	=> 새로운 요청객체, 응답객체로 새로운 페이지로 이동
+	=> 기존 정보 유지 불가
+	
+	
+## 실습 : 회원가입 요청	
+-- 회원가입요청~응답 흐름에 따라 단계별로 확인하면서 실습 진행하세요
+-- 회원가입요청페이지를 참고로해서 가입요청 컨트롤러 구현하세요
+
+1. 요청페이지
+	-- join.jsp
+	-- 입력데이터 : memberId, memberPw, name, mobile, email
+	-- action="join" 
+	-- mehod="post"
+	
+2. 요청 컨트롤러
+	-- JoinControllerServlet
+	-- url-pattern : /join
+	
+	-- 한글인코딩 설정 : 완료
+	-- 요청데이터 가져오기 : 완료
+	-- 데이터 검증 : 완료
+	
+	-- Model 요청 의뢰 : 완료
+	
+	-- Model 수행결과받아서 응답위한 설정 : 완료
+	
+	-- 성공 페이지이동 : login.jsp : 완료
+	-- 실패 페이지이동 : result.jsp : 완료
+	
+3. 서비스
+	-- MemberService
+4. dao
+	-- MemberDao
+	
+5. 성공 응답페이지
+	-- loing.jsp : 완료
+
+6. 실패 응답페이지
+	-- result.jsp : 완료
+	
+	
+## Model
+-- Service : => DAO 완료
+-- DAO : 기존 재사용 (완료)
+-- DBMS (Table) : member 테이블, 초기 레코드 추가 (완료)
+
+
+## 로그인 db 연결 수행 변경
+-- 로그인 성공하면 main.jsp 
+	>> 로그인성공 : 아이디(등급)
+	>> 로그인성공 : user01(G)
+	
+## Connection Pool
+-- javax.sql.DataSource
+-- 컨넥션 객체를 서버 구동시에 미리 많이 생성해놓음
+
+-- DB Resource 관련 환경설정 방법
+/** jdbc resource property 
+ * -- 파일로 분리 설계 : java.io.* => 개발자가 직접 구현 마음데로 가능
+ * -- java.util.ResourceBundle API
+ * 		=> 규칙 
+ * 		1. 파일명확장자 : 파일명.properties
+ * 		2. 파일위치 : classpath 상대경로
+ * 		3. propert-name=property-value
+ * -- xml 파일
+ * 		=> 규칙
+ * 		<tag 속성명="속성값" 속성명='속성값'>contents</tag>
+ * 		<tag 속성명="속성값" 속성명='속성값' />
+ * 		=> xml 형식 구조 표준화 기술 : DTD, Schema
+ * 		=> xml = well-formed(xml 작성규칙 준수한 문서) + valid(dtd, schema 규칙 준수한 문서)
+ * */
+
+-- db 환경설정 범위
+	>> 서버 단위 : tomcat\conf> context.xml, serve.xml 등
+	>> 프로젝트 단위 : project\META-INF> context.xml 
+	
+	
+## 참고 API                                                              
+-- java.util.HashMap                                                  
+	=> keySet():Set                                                
+	=> get(key):Element => get(key):String             
+-- java.util.Set                                                                  
+	=> iterator():Iterator                                   
+-- java.util.Iterator
+	=> hasNext():boolean
+	=> next():String => key
+
+## html 순서있는 목록태그
+<ol>
+	<li>key = value</li>
+	<li> key = value</li>
+	......
+</ol>
+
+
+## HttpSession
+index.jsp 세션정보 B8ABE6299317AC04DBE1AAA8560FB7D6, true, 1625729455193
+login.jsp 세션정보 B8ABE6299317AC04DBE1AAA8560FB7D6, false, 1625729455193
+login servlet 세션정보 B8ABE6299317AC04DBE1AAA8560FB7D6, false, 1625729455193
+
+
+## ---------------------------------
+## 로그인 요청 ~ 응답 서비스 [완료]
+## ---------------------------------
+1. 요청페이지 [완료]
+	-- 데이터입력 : 아이디, 비밀번호
+	
+2. 컨트롤러 [완료]
+	2.1 요청파악 [완료]
+	2.2 [요청데이터 추출] : 필수/선택, 사용자입력/시스템제공, 단일속성/다중속성/도메인/collection
+		>> 아이디, 비밀번호 [완료]
+	2.3 요청데이터 검증 : 검증 규칙(분석.설계)
+		>> 필수 입력 항목 [완료]
+	2.4 Model(Service)에게 검증받은 데이터를 전달하면서 요청의뢰
+
+	2.5 Model(Service)로 부터 요청(응답)결과 받아서
+	2.6 응답을 설정 : scope(requestScop, sessionScope, applicationScope) [완료]
+		>> sessionScope 설정 : 로그인 ~ 로그아웃(타임아웃) 정보 유지
+		>> 세션정보 : 아이디, 등급
+	2.7 응답페이지 이동하기 : forward(기존정보유지시 이동), redirect(기존정보사용하지 않음, 새로운요청)	
+		>> redirect [완료]
+	
+		
+3. Model:Service [완료]
+	3.1 서비스 수행하기?? => DB관련정보 => DAO 요청 의뢰
+	3.2 DAO 결과를 받아서 서비스 수행하기 => 회원등급(grade)
+	3.3 요청결과(응답)를 Controller에게 반환
+	
+	
+4. Model:DAO [완료]	
+	>> 데이터베이스 SQL 수행처리
+	>> 수행결과를 Service에게 반환
+
+5. 응답페이지 [완료]
+	>> Controller에서 설정한 응답결과를 화면 보여주기
+
+6. 테스트 [완료]
+	>> invalid
+		=> 로그인 회원전용 페이지 : http://localhost:8070/mms04/main.jsp [완료]
+		=> 아이디 미입력, 비밀번호 미입력
+		=> 아이디 공백입력, 비밀번호 공백입력
+		=> 없는아이디, 틀린 비밀번호
+		
+	>> valid
+		=> 아이디, 비밀번호
+		=> 회원 등급별로 로그인 : 일반회원, 우수회원, 관리자
+		=> main.jsp : 응답결과 확인
+		
+
+## ---------------------------------
+## 내정보조회 요청~응답 
+## ---------------------------------
+1. 요청페이지 
+	-- 회원전용 서비스 페이지 : main.jsp
+	-- 데이터입력 : 없음(세션에 설정된 로그인 아이디 사용)
+	-- 전제조건 : 로그인 사용자
+	-- <a href="myInfo">내정보조회</a>
+	
+2. 컨트롤러 : MyInfoControllerServlet(/myInfo)
+	2.1 요청파악 
+	2.2 [요청데이터 추출] : 필수/선택, 사용자입력/시스템제공, 단일속성/다중속성/도메인/collection
+	=> 세션에 설정되어 있는 로그인 아이디 : 시스템제공
+	
+	2.3 요청데이터 검증 : 검증 규칙(분석.설계)
+	=> 세션에서 가져온데이터 사용하므로 따로이 검증필요없음
+		
+	2.4 Model(Service)에게 검증받은 데이터를 전달하면서 요청의뢰
+
+	2.5 Model(Service)로 부터 요청(응답)결과 받아서
+	
+	2.6 응답을 설정 : scope(requestScop, sessionScope, applicationScope) 
+		>> requestScop
+		
+	2.7 응답페이지 이동하기 : forward(기존정보유지시 이동), redirect(기존정보사용하지 않음, 새로운요청)	
+		>> forward myInfo.jsp
+		
+3. Model:Service 
+	3.1 서비스 수행하기?? => DB관련정보 => DAO 요청 의뢰
+	3.2 DAO 결과를 받아서 서비스 수행하기 => 
+	3.3 요청결과(응답)를 Controller에게 반환
+	
+4. Model:DAO 	
+	>> 데이터베이스 SQL 수행처리
+	>> 수행결과를 Service에게 반환
+
+5. 응답페이지 
+	>> Controller에서 설정한 응답결과를 화면 보여주기
+	>> myInfo.jsp
+		>> dto
+		>> dtoMap
+
+6. 테스트 
+	>> invalid
+		
+	>> valid
+
+## ---------------------------------
+## 내정보 변경 저장 요청 
+## ---------------------------------
+1. 요청페이지 
+	-- 회원전용 서비스 페이지 : main.jsp
+	-- 데이터입력 : 없음(세션에 설정된 로그인 아이디 사용)
+	-- 전제조건 : 내정보조회 
+	-- myInfo.jsp
+	-- <form action="myInfoUpdate" method="post">
+
+2. 
+
+
+
+
+
+
+
+## ---------------------------------
+## 로그아웃 요청~응답 
+## ---------------------------------
+1. 요청페이지 *****
+	-- 회원전용 서비스 페이지 : main.jsp
+	-- 데이터입력 : 없음
+	-- 전제조건 : 로그인 사용자
+	
+2. 컨트롤러 LogoutControllerServlet(/logout) ****
+	2.1 요청파악 ****
+	2.2 [요청데이터 추출] : 필수/선택, 사용자입력/시스템제공, 단일속성/다중속성/도메인/collection
+		 >> 로그인성공 상태정보 : 아이디, 등급
+		 >> 상태 정보 삭제 : removeAttribute("key")
+		 >> 세션객체 삭제 : invalidate()
+		 
+	2.3 요청데이터 검증 : 없음
+		
+		2.4 Model(Service)에게 검증받은 데이터를 전달하면서 요청의뢰 :없음
+
+		2.5 Model(Service)로 부터 요청(응답)결과 받아서 : 없음
+	
+	2.6 응답을 설정 : scope(requestScop, sessionScope, applicationScope) : 없음
+		
+	2.7 응답페이지 이동하기 : forward(기존정보유지시 이동), redirect(기존정보사용하지 않음, 새로운요청)	
+		>> redirect 시작페이지
+
+3. Model:Service 
+	
+4. Model:DAO 	
+
+5. 응답페이지 
+	>> 시작페이지 : index.jsp
+
+6. 테스트 
+	>> invalid
+		
+	>> valid
+
+
+## 페이지 레이아웃
+-- 화면 배치
+-- 조각페이지 활용
+-- 조각페이지는 <body>~</body> 태그 내부에 올 수 있는 태그로 구성
+
+
+## 조각페이지(fragement page) 사용방법
+1. 지시어 태그
+-- 형식 : <%@ include file="조각페이지url" %>
+-- include 시점 : a.jsp => a_jsp.java 변환시점 포함
+
+2. 액션 태그
+-- parameter 전달 가능
+-- include 시점 : runtime(요청)
+
+-- <jsp:include page="조각페이지url" />
+
+-- <jsp:include page="조각페이지url" > 
+	<jsp:param name="변수명" value="값" />
+	<jsp:param name="변수명" value="값" />
+   </jsp:include>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
