@@ -13,8 +13,6 @@
     response.setContentType("text/html;charset=utf-8");  
     PrintWriter out = response.getWriter();  
 
-2. HTTP 상태 405 – 허용되지 않는 메소드  
-  메시지 HTTP 메소드인 POST는 이 URL에 의해 지원되지 않습니다.  
-  설명 요청 행에 포함된 해당 메소드는, origin 서버에 의해 인지되었으나, 대상 리소스에 의해 지원되지 않습니다.  
+2. Map을 이용한 회원정보 기능 추가
 
-  방법 찾는 중...Processing
+강사님 자료에서 회원정보 기능을 해시맵을 통해 접근 가능하도록 변경
