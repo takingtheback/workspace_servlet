@@ -1,0 +1,434 @@
+## -----------------------------------
+##  SERVLET & JSP 2일차 : 
+	-- FrontController
+	-- Servlet 3.x Annotation
+	-- Connection Pool : DataSource
+	-- HttpSesssion
+## -----------------------------------
+
+## 회원관리 Controller 클래스 
+-- 요청-응답 제어 담당 클래스
+-- package com.work.controller;
+-- MemberControllerServlet
+-- FrontController
+
+
+## 회원관리 서비스 클래스 
+-- 업무로직 담당 클래스
+-- 로그인, 회원가입 등 서비스 구현
+-- package com.work.service;
+-- MemberService.java
+
+
+## 회원 도메인 클래스
+-- 회원 속성 모델링 클래스 
+-- package com.work.dto;
+-- Member
+-- 도메인 속성: 
+	1.	아이디 : memberId
+	2.	비밀번호 : memberPw
+	3.	이름 : name
+	4.	휴대폰 : mobile
+	5.	이메일 : email
+	6.	가입일 : entryDate
+	7.	등급 : grade
+	8.	마일리지 : mileage
+	9.	담당자	 : manager
+
+
+## 회원 도메인 클래스
+-- DTO Pattern
+	>> Encapsulation : private 멤버변수, public setter(), public getter()
+	>> 직렬화객체 : java.io.Serializable interface implments : marked interface(구현메서드는 없음)
+	>> setter()/getter() 메서드 이름 규칙 반드시 준수
+	
+	
+-- JavaBean Component
+	>> package 선언
+	>> Encapsulation
+	>> 기본 생성자 선언
+	
+
+## 회원등록 요청 구현
+-- view : 요청화면
+	>> 회원등록 요청페이지 : 
+		시작페이지 회원가입 >> joinForm >> join.jsp >>
+ 	
+	>> 회원등록 요청
+		회원가입페이지 등록 >> join.jsp >> join >> MemberControllerServlet
+
+-- controller
+	>> MemberControllerServlet 
+	>> joinForm()
+	>> join()
+	
+-- model : MemberService
+	>> 회원등록 메서드 추가 구현 : addMember(Member): boolean
+	>> 회원등록 사용자 입력 데이터 : 아이디, 비밀번호, 이름, 휴대폰, 이메일
+	>> 신규회원 정보 시스템 추가 데이터 : 가입일(현재날짜-자바 Utility.java) 등급(G)
+	>> com.work.util.Utility : java 구현한 클래스 가져와서 사용
+
+
+## FrontController
+-- 현재 서블릿 구현 : 요청당 하나의 서블릿 클래스 설계, form서블릿 + 요청서블릿 2개 클래스 설계
+-- 단일 서블릿 그룹핑, 서브시스템 단위 단일 서블릿 그룹핑 
+-- Query String 
+	>> url ? key=value & key=value
+
+
+## Servlet 환경설정
+-- servlet2.x	
+	>> web.xml
+	>> <url-pattern>
+	>> <load-on-startup>
+	
+-- servlet3.x
+	>> web.xml
+	>> Annotation 추가
+
+## Servlet Annotation
+-- 선언위치 : 서블릿클래스 선언문 앞
+-- 기본형식 : @WebServlet()
+-- 웹프로젝트 생성시에 Servlet 버전을 3.x 선택
+	>> web.xml 생성 선택사항
+	
+-- 1. 
+@WebServlet("/loginForm")
+
+-- 2. 
+@WebServlet(value="/mms04/login")
+
+-- 3. 다중 url-pattern 설정
+@WebServlet(urlPatterns = {"/mms04/login", "/aaa/xxx"})
+
+-- 4. load-on-startup
+@WebServlet(
+	urlPatterns = {"/mms04/memberCollection"}, 
+	loadOnStartup = 1
+)
+	
+## 서블릿에서 응답페이지 이동 방법
+-- redirect
+	=> 새로운 요청으로 응답페이지 이동
+	=> 기존 요청객체, 응답객체 버리고 새로운 페이에서 새로운 요청객체, 응답객체 
+	=> 코드 : response.sendRedirect("url");
+	
+-- forward 
+	=> ServletRequest >> RequestDispatcher	getRequestDispatcher(String path)
+	=> RequestDispatcher >> forward(ServletRequest request, ServletResponse response)
+
+	=> 요청객체에 응답위한 값 설정 메서드
+		>> setAttribute(String name, Object object) : void
+		>> getAttribute(String name) : Object => type casting 필요
+
+	
+## 웹 자원 및 서블릿 경로설정 : 
+-- view 자원위치 : WebContent\xxx> 서브폴더 기반으로 변경 *.jsp 
+-- url-pattern : "/xxx/기존url-pattern"
+
+-- 경로설정: "/웹컨텍스트명/xxx" 기반 상대경로 설정
+	<a href="/웹컨텍스트명/xxx">xxx</a>
+	<form action="/웹컨텍스트명/xxx">
+
+	>> servlet : redirect
+	response.sendRedirect("/웹컨텍스트명/xxx/aaa.jsp");
+	
+	>> servlet : forward(주의사항) : 
+	>> 현재 url 주소를 기준으로 현재 컨텍스트 기준 상대경로지정, 따라서 컨텍스트명 표기하지 않음(규칙)
+	>> request.getRequestDispatcher("/xxx/message.jsp");
+	RequestDispatcher nextView = request.getRequestDispatcher("/xxx/message.jsp");
+	nextView.forward(request, response);
+
+
+## JDBC 프로그래밍을 위한 사전 준비사항
+1. DBMS : Oracle11g(XE)
+2. JDBC API : JavaSE(포함설치) : java.sql.*, javax.sql.*, javax.naming.*
+3. JDBC DRIVER
+	-- DB벤더가 구현해서 제공하는 라이브러리
+	-- ORACLE : ojdbc6.jar (6:jdbk1.6)
+	-- 위치 :
+	=> 공통 : 
+		>> C:\Program Files\Java\jdk1.8.0_202\jre\lib\ext> ojdbc6.jar
+		>> C:\Program Files\Java\jre1.8.0_202\jre\lib\ext> ojdbc6.jar
+		
+	=> 어플리케이션 단위 : 
+		>> (dos) set classpath=xxx\ojdbc6.jar 설정 추가
+		>> (dos) javac -classpath xxx\ojdbc6.jar 설정 추가
+		>> (eclipse) project > properties > Java Build Path > Libraries > External jars
+
+## JDBC 주요 API
+-- package : java.sql.*, javax.sql.*, javax.naming.*
+  1. Class.forName(driver)
+  2. DriverManager.getConnection(url, user, password)
+  3. Connection
+  4. Statement / PreparedStatement / CallableStatement
+  5. ResultSet
+  
+-- Connection Pool
+  6. javax.sql.DataSource
+  7. javax.naming.Context
+
+  
+## JDBC 프로그래밍 순서
+  1. jdbc driver 로딩 : 생성자
+	-- Class.forName(driver);
+  
+  2. db 서버연결
+	-- Connection conn = DriverManager.getConnection(url, user, password);
+  
+  3. sql 통로개설 : Statement / PreparedStatement / CallableStatement
+	-- Statement stmt = conn.createStatement();
+  
+  4. sql 수행요청 : executeUpdate():int / executeQuery():ResultSet / execute() : boolean
+	-- CRUD : 추가, 조회, 변경, 삭제 
+	-- CUD : executeUpdate():int
+	-- R : executeQuery():ResultSet *****
+	-- DDL : execute() : boolean
+  
+  5. sql 결과처리 
+	-- int : CUD 수행한 결과 행수 
+	-- ResultSet : R select 수행한 결과 레코드 
+	-- ResultSet 결과값 가져오기 위한 함수
+		>> 커서 이동 메서드 : next():boolean
+		>> 현재 커서(row 행)의 컬럼단위로 데이터 가져오기
+		>> getXxx("컬럼명"):xxx타입, getXxx(select_index_no), index_no 시작은 0번부터
+		>> getString("name") : String
+		>> getInt("mileage") : int
+  
+  6. 자원해제
+	-- ResultSet#close()
+	-- Statement#close()
+	-- Connection#close()
+  
+  
+## JDBC 예외처리
+  1. ClassNotFoundException
+  2. SQLException
+     
+
+## SQL 구문 수행 통로
+-- Statement
+	>> 빈 통로
+	>> 동적 sql 요청
+	>> sql + 데이터 함께 서버 전송 : n/w 트래픽 많이 발생
+	>> sql 문자열 변환 별도로 수행 불편 : "'user01'"
+	>> 보안이슈 : sql injection
+	
+	>> 예시
+	Connection conn = DriverManager.getConnection(url, user, password);
+	Statement stmt = conn.createStatement(); // 빈통로
+	ResultSet rs = stmt.executeQuery("select * from member where member_id='" + memberId + "'");
+	
+-- PreparedStatement
+	>> 전용 통로
+	>> 정적 sql 요청 (사전에 정의된 sql 전용)
+	>> 데이터만 서버 전송 : n/w 트래픽 감소
+	>> pstmt.setString(1, memberId) : 자동으로 sql 문자열 변환
+	>> 보안이슈 발생예방 : sql injection => 사용자 입력데이터가 sql 구문의 데이터로 처리됨
+	
+	>> 예시
+	Connection conn = DriverManager.getConnection(url, user, password);
+	
+	String sql = "select * from member where member_id=? and member_pw=?"
+	PreparedStatement pstmt = conn.prepareStatement(sql) // 통로개설시에 아규먼트로 sql 구문전달, 미완성통로
+	// ? 에 매핑되는 값을 순서대로 설정 : setXxx(?-index-no, 값), xxx 데이터 타입, 완벽한 전용통로 개설완료
+	pstmt.setString(1, memberId);
+	pstmt.setInt(x, mileage);	
+	
+	// sql 수행요청 : 주의사항 아규먼트가 없음
+	ResultSet rs = pstmt.executeQuery();
+	
+-- CallableStatement
+	>> db server 저장되어 있는 stored procedure 또는 stored function 호출 : PL/SQL
+
+
+## PreparedStatement 오류
+-- java.sql.SQLException: 인덱스에서 누락된 IN 또는 OUT 매개변수:: 2
+	>> ? 매핑 되지 않았을때 발생
+-- java.sql.SQLException: ORA-03115: unsupported network datatype or representation
+	>> executeQuery(sql) : sql 수행메서드에 아규먼트 지정시 발생
+
+  
+## JDBC SQL 구문 수행시 유의사항
+-- '데이터' : SQL 문자열은  단일 인용부호로 감싸야함
+-- SQL 수행문뒤에 ;(세미콜론) 표기해서는 안됨
+
+ 
+## JDBC 관련 Pattern
+-- DAO Pattern
+-- DTO Pattern
+-- Singleton Pattern
+-- Factory Pattern
+
+## Singleton Pattern 설계 규칙
+-- 목적 : 하나의 클래스(class)에 대해서 단일 인스턴스(instance/object) 설계
+-- DAO 클래스에 적용 설계 : MeberDao 설계 변경
+
+-- 설계 규칙 : 
+	1. private static 클래스이름 instance = new 클래스이름();
+	2. private 생성자(){}
+	3. public static 클래스이름 getInstance() { return instance; }
+
+-- Singleton Pattern 클래스 사용 
+	>> 직접 객체 생성 불가
+	4. 클래스이름 참조변수명 = 클래스이름.getInstance();
+	
+
+## JDBC Resource Properties
+  String driver = "oracle.jdbc.driver.OracleDriver";
+  String url = "jdbc:oracle:thin:@localhost:1521:XE";
+  String user = "scott";
+  String password = "tiger";  
+
+
+## DataSource config : context.xml
+-- Connection Pool
+-- jdbc resource propertity : driver, url, user, password
+ 
+-- 위치 : 
+	>> 공통 : tomcat\conf> context.xml
+	>> context 단위 : context-path\META-INF> context.xml
+	
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Context>
+	<WatchedResource>WEB-INF/web.xml</WatchedResource>
+	<Resource auth="Container" 
+		driverClassName="oracle.jdbc.driver.OracleDriver" 
+		maxActive="20" 
+		maxIdle="2" 
+		maxWait="-1" 
+		name="jdbc/Oracle11g" 
+		username="scott"
+		password="tiger" 
+		type="javax.sql.DataSource"
+		url="jdbc:oracle:thin:@localhost:1521:XE"  />
+</Context>
+
+-- DataSource 사용 FactoryDao Connection Pool 설정 방법
+/**
+ * Connection을 연결한 후 멤버 attribute 인 conn 에 Connection 객체를 세팅한 후 리턴
+ * -- DataSource (Connection Pool) 를 사용하여 데이터베이스 연결객체를 관리
+ * -- WebContent\META-INF > context.xml 데이터베이스 환경에 맞게 설정
+ * -- TOMCAT\conf> context.xml 데이터베이스 환경에 맞게 설정
+ 
+ * @return Connection
+ */
+public static Connection getConnection() {
+    Connection conn = null;
+    try {
+        Context initContext = new InitialContext();
+        DataSource ds = (DataSource)initContext.lookup("java:comp/env/jdbc/Oracle11g");
+        conn = ds.getConnection();
+     } catch (Exception e) {
+        System.out.println("[JdbcTemplate.getConnection] : " + e.getMessage());
+        e.printStackTrace();
+    }
+    return conn;
+ }
+
+
+## http 프로토콜 특성
+1. Connectionless : 
+	>> 서버 부하감소
+	>> 서버 문제생겨도 응답결과에 대해서 영향받지않음
+2. Stateless
+	>> 상태정보 저장되지않음
+
+## Session Management
+-- 상태정보 저장 방법
+-- 장바구니, 사용자 전용서비스
+-- 세션처리방법
+	1. Cookie API : 크기, 갯수, 타입 제한
+	2. HttpSession API : 권장(크기, 갯수, 타입 제한 없음)
+	3. URL Rewriting : 개발자 절대로 안함
+
+## 1. Cookie API
+-- Cookie(java.lang.String name, java.lang.String value)
+-- HttpServletResponse#addCookie(Cookie cookie)
+-- HttpServletRequest#getCookies():Cookie[]
+-- 특징 : 상태정보저장가능, 문자열 가능, 크기 제한, 갯수 제한
+
+
+## 2. HttpSession API (*****)
+-- HttpServletRequest#getSession() : HttpSession
+-- HttpServletRequest#getSession(boolean) : HttpSession
+-- true : 
+	>> 세션없으면 신규 세션 생성
+	>> 세션있으면 기존 세션 반환
+	>> 사용자 로그인 인증 요청
+	
+-- false
+	>> 세션없으면 null 반환
+	>> 세션있으면 기존 세션 반환
+	>> 회원 전용 서비스 요청
+	>> 세션 유무 및 세션에 설정해놓은 세션정보까지 함께 검증
+
+-- JSP 내장객체
+	>> HttpSession : session 자동으로 (true) 생성
+	>> 사용자가 jsp 페이지를 요청이 들어오면 자동으로 true 세션객체 생성 제공함
+
+-- 특징 : 상태정보저장가능, 객체(모든데이터 가능), 크기 제한없음, 갯수 제한없음
+
+
+
+## 3. URL Rewriting
+-- 쿠키 정보 저장을 허용하지 않는 사용자에게 url 정보뒤에 세션id를 추가해서 서비스를 제공하는 방법
+
+
+## 2. HttpSession API : 주요 메서드
+-- HttpServletRequest#getSession() : HttpSession
+-- HttpServletRequest#getSession(boolean) : HttpSession
+
+-- setAttribute(K,Object) : 세션정보 추가 
+-- getAttribute(K) : Object : 세션정보 조회 => 실제 객체타입 형변환 필요
+-- removeAttribute(K) : 세션정보 삭제
+-- invalidate() : 세션객체 무효화(삭제)
+-- getId() : 세션아이디
+-- isNew() : 새로운 세션 여부
+
+## index.jsp
+-- 무조건 세션객체가 true로 자동 생성 제공됨
+<h3>jsp 세션정보</h3>
+세션아이디 : <%= session.getId() %><br>
+세션신규여부 : <%= session.isNew() %><br>
+세션생성시간 : <%= session.getCreationTime() %><p>
+
+
+## LoginFormServlet.java
+-- index.jsp 페이지를 통해서 서블릿 요청
+HttpSession session = request.getSession(true);
+
+System.out.println("LoginFormServlet session");
+System.out.println(session.getId());
+System.out.println(session.isNew());
+System.out.println(session.getCreationTime());
+
+
+## 직접 서블릿 요청
+
+
+## ServletConfig API
+-- 해당 서블릿에 대한 환경설정
+-- ServletContext	getServletContext()
+
+
+## ServletContext API
+-- 해당 어플리케이션에 대한 환경설정
+-- 해당 어플리케이션에 있는 모든 서블릿(jsp)객체들이 공유 객체
+-- setAttribute(String name, Object object) : void
+-- getAttribute(String name) : Object => type casting 필요
+-- removeAttribute(String name) : void
+
+
+
+
+
+
+
+
+
+
+
+	
+

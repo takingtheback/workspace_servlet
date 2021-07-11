@@ -1,0 +1,59 @@
+@charset "UTF-8";
+
+/* logo image */
+img[src^="img/logo"] {
+	width:50px;
+	height:50px;
+}
+
+/* common.css */
+a { text-decoration: none; }
+
+input[type=text], input[type=password] {
+	display: block;
+	width: 200px;
+	margin: 5px 0;
+}
+
+input[type=submit], input[type=reset] {
+	width: 80px;
+	margin-top: 15px;
+	color: white;
+	border-radius: 3px;
+	border: none;
+}
+
+input[type=submit] {
+	background-color: orange;
+}
+
+input[type=reset] {
+	background-color: dimgray;
+}
+
+input[type=submit]:hover {
+	background-color: orangered;
+}
+
+input[type=reset]:hover {
+	background-color: royalblue;
+}
+
+input[readonly] {
+	background-color: orange;
+}
+
+
+div.btn {
+	box-sizing: border-box;
+	padding-left: 60px;
+}
+
+div.both {
+	padding-left: 15px;
+}
+
+div.top_menu {
+	text-align: right;
+	padding-right: 20px;
+}

@@ -1,0 +1,671 @@
+## -----------------------------------
+##  SERVLET & JSP 3일차 : 
+	-- JSP
+	-- ACTION Tag
+	-- EL
+	-- JSTL
+## -----------------------------------
+
+## JSP(Java Server Page)
+-- View 담당 : 동적 컨텐츠 서비스 가능
+-- 구성요소
+	1. html tag, plain-text	
+	2. JSP tag
+	3. Action Tag
+	4. JSTL => 자바코드를 태그 변경(taglib : 자바코드로 구성된 라이브러리 추가 필요) 
+	5. EL => jsp 포함(별도의 라이브러리 필요하지 않음)
+	6. Custom Tag => 프레임워크 등에서 추가 태그 사용함
+	
+## 2. JSP tag
+-- 기본형식 : <% 기호        %>
+
+-- (1) 주석태그
+	>> html 주석태그 <!-- 사용자 소스보기에서 볼수 있음 : 화면 배치 관련 주석 -->
+	
+	>> java 주석태그 : jsp 페이지 java 소스코드 변환시에 포함: jsp 오류 디버그 체킹
+		>>> <% // 자바 한줄 주석 %>
+		>>> <% /* 자바 여러줄 주석 */ %>
+	
+	>> jsp 주석태그
+		>>> <%-- jsp 주석  --%>
+		>>> jsp 개발자가 보기위한 주석
+		>>> 주석내용에 자바코드가 코드실행한 결과를 주석내용
+		>>> 주의사항 : 주석내용에 있는 코드로 인해서 오류가 발생할 수 있음, 필요없는 자바코드를 주석으로 말지말것
+
+-- (2) 지시어태그(directive tag)
+	>> jsp 페이지에 대한 java 변환시에 부가정보를 설정 태그
+	>> 형식 : <%@ 지시어태그명 속성명="속성값" 속성명='속성값' %>
+	>> 종류 : 
+		>>> page 지시어
+		>>> taglib 지시어 : jstl 사용
+		>>> include 지시어 : fragement(조각페이지) 사용
+		
+	>> page 지시어 속성
+		=> contentType="text/html;charset=utf-8"
+		
+		=> import="top.sub.클래스명, top.sub.클래스명x" (권장하지 않음)
+		
+		=> import="java.util.Date" (하나씩 import 속성 사용 권장 : 가독성)
+		=> import="java.util.ArrayList" 
+	
+	
+-- (3) 정의태그(declaration tag)
+	>> 멤버변수, 메서드, 라이프사이클메서드 재정의 
+	>> 형식 : <%! 자바코드 %>
+
+
+-- (4) expression tag
+	>> 형식 : <%= 5 + 3   %>
+	>> 수식, 변수명, 결과값을반환하는 메서드호출문, new 클래스이름() 객체 생성 수행결과를 jsp 페이지 출력하는 서비스 
+	
+	>> _jspService() 메서드의 서비스 수행문 코드로 자동 변환 태그 
+	>> 변환 : out.write(수행결과값);
+	>> 주의사항 : 수행문뒤에 ;(세미콜론)을 표기해서는 안됨 
+	
+-- (5) scriptlet tag	
+	>> 형식 : <%	자바 서비스 수행코드;   %>
+	>> _jspService() 메서드의 서비스 수행문 코드로 자동 변환 태그 
+	>> 변수선언 : 서비스 메서드 내부에서 사용가능한 지역변수
+	
+	
+-- 주의사항:
+	>> (4) expression tag, (5) scriptlet tag
+	>> 위에서 아래로 순차적으로 코드 변환 발생
+	>> 선언 순서 유의할것
+	>> jsp 페이지에 주석내용에 있는 jsp 코드도 수행됨, 주석내용에는 jsp 코드가 와서는 안됨
+	
+## jsp 라이프사이클
+-- 초기화 : public void jspInit() {} 필요시에 재정의 사용
+-- 자원해제 : public void jspDestroy() {} 필요시에 재정의 사용
+
+-- 서비스 : jsp => java 변환시에 _jspServicet(){ // 서비스변환코드 }
+	>> (4) expression tag
+	>> (5) scriptlet tag
+	
+	
+## jsp 요청 ~ 응답 처리 순서
+-- jsp 요청 : http://localhost:port/context-path/hello.jsp
+-- hello.jsp 
+	=> java 코드 변환 : hello_jsp.java (tomcat work directory에 위치함)
+	=> 소스코드 컴파일 : hello_jsp.class (tomcat work directory에 위치함)
+
+	=> jsp lifecycle : 로딩 => 객체생성 => 초기화 => 서비스 (반복수행) => 자원해제
+
+## JSP 내장객체
+-- jsp 페이지가 java 변환시에 _jspService() 서비스 메서드 내부에서 사용가능하도록 자동으로 제공하는 객체
+-- _jspService() 메서드 내부에서 사용 가능한 지역변수 객체
+-- <% %>, <%= %> 태그에서만 사용 가능
+
+-- request	:	HttpServletRequest
+-- response	:	HttpServletResponse
+-- config	:	ServletConfig
+-- application	:	ServletContext
+-- session		:	HttpSession
+-- exception	:	Throwable
+-- page		:	PageContext
+
+
+-- 예시>
+	>> 서블릿 : request.setAttribute("message", "메세지....");
+	>> JSP : <%= request.getAttribute("message") %>
+	
+## 웹페이지 에러 처리 방법
+-- 페이지 단위 에러 처리 방법
+	<%@ page errorPage="error-handling-page-url" %>
+	<%@ page isErrorPage="false | true" %>
+
+-- web.xml 공통 에러 처리 방법
+	<web-app>
+	  <error-page>
+		<error-code>404</error-code>
+		<location>/error/404.jsp</location>
+	  </error-page>
+	  
+	  <error-page>
+		<exception-type>java.lang.NullPointerException</exception-type>
+		<location>/error/NullPointerException.jsp</location>
+	  </error-page>
+	  
+	  <error-page>
+		<exception-type>java.lang.NumberFormatException</exception-type>
+		<location>/error/NumberFormatException.jsp</location>
+	  </error-page>
+
+	  <error-page>
+		<exception-type>java.lang.Exception</exception-type>
+		<location>/error/Exception.jsp</location>
+	  </error-page>	
+	</web-app>
+	
+
+## ACTION 태그	
+-- 기본형식
+	1. <jsp:액션태그명 속성명="속성값" 속성명='속성값' />
+	2. <jsp:액션태그명 속성명="속성값" 속성명='속성값'>
+			// body contents
+	   </jsp:액션태그명>
+	
+-- 액션태그 종류
+1. new instance(객체 생성) 또는 object lookup(객체 가져오기)
+	<jsp:useBean 
+		id="참조변수명"
+		class="패키지명.패키지명.클래스명"
+		scope="page-default | request | session | application" />
+
+	>> object lookup(객체 가져오기) 예시
+	>> 서블릿 코드
+		request.setAttribute("dto", dto);
+	>> JSP 
+		<%
+			Member dto = (Member)request.getAttribute("dto");
+		%>
+
+	>> ACTION tag : JSP
+		<jsp:useBean id="dto" scope="request" />
+
+2. JavaBeanComponent(Domain 클래스) 속성값 가져오기 => getter() 호출
+	<jsp:getProperty name="useBean-id-참조변수명" property="도메인클래스멤버변수명" />
+
+3. JavaBeanComponent(Domain 클래스) 속성값 설정하기 
+	=> setter() 호출, model-2 architecture 서블릿 데이터가져오기
+	<jsp:setProperty name="useBean-id-참조변수명" property="도메인클래스멤버변수명" />
+	<jsp:setProperty name="useBean-id-참조변수명" property="*" />
+
+4. 조각페이지 삽입(fragement)
+-- action tag
+	(4-1) 
+	<jsp:include page="조각페이지url" />
+	
+	<jsp:include page="조각페이지url" >
+		<jsp:param name="변수명" value="값" />
+	</jsp:include>
+
+-- directive tag
+	<%@ include file="조각페이지url" %>
+
+-- 조각페이지 parameter 가져오기	
+	>> request.getParameter("name")
+
+-- 조각페이지 이용해서 화면 페이지 레이아웃 설계시 주의사항
+	>> <body> 조각페이지 위치 </body>
+	>> body 내부에 올 수 있는 태그로 구성 
+	
+5. 페이지 forward 이동
+	<jsp:forward page="forward-page-url" />
+
+	<jsp:forward page="forward-page-url">
+		<jsp:param name="변수명" value="값" />
+	</jsp:forward>
+
+6. <jsp:param name="변수명" value="값" />
+-- <jsp:include>, <jsp:forward>
+-- 동적 parameter 설정시 사용 가능한 태그
+-- 독립적으로 사용 불가 태그 
+
+## 페이지 레이아웃 
+-- 조각페이지 이용해서 변경
+-- logo_menu 조각페이지
+-- footer_menu 조각페이지
+-- 로그인 전 메뉴 조각페이지
+-- 로그인 후 메뉴 조각페이지
+	>> 관리자 로그인 후 메뉴 조각페이지
+	>> 일반 / 우수회원 로그인 후 메뉴 조각페이지
+	
+
+## Version History:
+-- JSTL 1.2.5
+
+## JSTL & EL
+
+JSP		:	<%= pageContext.getAttribute("notice").getWriter() %>
+EL		:	 ${notice.writer}  ==  ${notice[wirter]}
+JSTL	:	 <c:out value="${notice.writer}" default="guest"/>
+
+
+##  EL : Expression Language >>
+
+-	JSP 2.0 EL 포함 (JSP 1.2 에서는 JSTL 에 포함됨)
+-	JSP 페이지를 쉽게 작성 가능, java code 대체, 재사용 가능
+
+1.		기술방법 :
+		${ expr }
+
+2.		연산자 지원: 산술, 비교, 논리, 공백 연산자 제공
+		
+		산술연산자 :	
+			+	 -	 *
+			/		div
+			%		mod
+		
+		비교연산자 :	
+			==	    eq	
+			!=		ne
+			<		lt
+			>		gt
+			<=	    le
+			>=	    ge
+			
+		논리연산자 :	
+			&&		and	
+			||		or
+			!		not
+											
+		공백연산자 : 
+			empty   (null 또는 공백여부 확인)  / not empty / !empty
+
+
+3.		키워드 : 식별자로 사용못함
+		and		eq		gt		true		instanceof		mod
+		or		ne	 	le		false		empty
+		no		lt		ge		null		div
+
+4.		default 객체: 서블릿/JSP 값들을 쉽게 접근하기 위해서 제공된 객체들
+		
+		pageContext			: PageContext 객체
+		
+		pageScope			: page scope에 포함된 객체들
+		requestScope		: request scope에 포함된 객체들  => ${requestScope.dto.userid}
+		sessionScope		: session scope에 포함된 객체들	=> ${sessionScope.memberId}
+		applicationScope	: application scope에 포함된 객체들
+		
+		param					: HTTP parameters  
+									=> request.getParameter("userid")
+									=> ${param.userid}	
+		paramValues			    : parameter의 values
+									=> String[] params = request.getParameterValues("hobby")
+									=> ${paramValues.hobby}	
+		header					: HTTP 헤더 정보
+		headerValues			: 헤더의 values
+		cookie					: 쿠키들
+		initParam				: 컨텍스트의 초기화 parmeters, web.xml
+
+		default 사용예:
+
+		${pageContext.request.requestURI}	// 요청 uri
+		${requestScope.msg}					// request scope에서 저장된 msg 이름으로 저장된 객체 <jsp:getProperty name="aa" property="msg" scope="request" />
+		${param.userid}						// userid 라는 이름의 파라메터값
+		==> request.getParameter("userid")
+
+5.		sample code : hello_el.jsp
+
+
+## JSTL : Java Standard Tag Library >>
+	-- JSP 코드안의 java 코드 제거가 가능함
+	-- 재사용 가능한 컴포넌트임
+	-- Dynamic Contents를 작성 가능함
+	-- 구성요소 = JSP + 태크 라이브러리 + [web.xml] + TagHandler 클래스
+ 
+##	JSTL libary :	 jstl.jar , standard.jar 
+	--	c:\tomcat\lib 폴더에 복사하고 tomcat 재구동(서버 레벨)
+	--	컨텍스트의 WEB-INF\lib 폴더에 복사한다.	(컨텍스트 레벨)
+
+##	JSP 페이지에 JSTL을 사용하기 위해서 taglib 지시어 기술
+	<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+	<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+	<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+	<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+	<%@ taglib prefix="x" uri="http://java.sun.com/jsp/jstl/xml" %>
+
+## Core Library	
+	-- 수식, 제어흐름, URL 처리등 JSP에서의 기본적 기능 제공 라이브러리
+
+## 수식언어 지원
+	--	<out>	:  
+		JspWriter 통해서 수식 결과 출력
+		<c:out value="${param.name}" default="Guest" />
+		=> <%= request.getParameter("name") %>
+
+	--	<set> : 
+		변수에 값을 설정 시킴
+		<c:set var="변수명" value="설정값" scope="[page]|request|session|application" />
+		<c:set var="msg" value="Hello JSTL" />
+		<c:out value="${msg}" />
+
+	--	<remove>
+		scope에 저장된 변수 삭제시킴
+		<c:remove var="삭제변수명" scope="page|request|session|application" />
+
+	--	<catch>
+		예외처리 
+
+## 제어흐름
+	--	<if>	:
+		조건이 참인 경우에 수행 (else 부분은 기술할 수 없음)
+		<c:if test="테스트조건" 
+				 var="테스트조건실행결과저장변수"
+				 scope="page|request|session|application" />
+
+		<c:if test="${!empty param.name}">
+			이름: ${param.name}
+			<br>
+		</c:if>
+
+		<c:if test="${empty param.name}">
+				이름: Guest(손님)
+				<br>
+		</c:if>
+		
+	--	<choose>~<when>~	<otherwise>
+		다중 조건 비교 수행, switch~case~default 와 유사
+
+		<c:choose>
+			<c:when test="${param.type == 1}"><c:out value="10분간 쉽니다"/></c:when>
+			<c:when test="${param.type == 2}"><c:out value="20분간 쉽니다"/></c:when>
+			<c:otherwise><c:out value="오늘 수업을 마치겠습니다." /></c:otherwise>
+		</c:choose>
+
+	--	<forEach>	
+		count, item에 의한 반복 수행
+		
+		// count에 의한 반복 수행 : jdk1.4 반복횟수 지정
+		<c:forEach var="no" begin="1" end="10" step="1">
+			<c:out value="${no}" />
+		</c:forEach>
+
+		// item들에 의한 반복 수행 : Collection, Array jdk1.5 크기만큼
+		// jdk1.5 for(타입 변수명 : collection참조변수명)
+		<c:forEach var="item에대한참조변수명" items="${collection참조변수명}">
+			<c:out value="${item에대한참조변수명.멤버이름}" />
+		</c:forEach>
+
+		<c:forEach var="h" items="${header}">
+			<li> 
+			<c:out value="${h.key}"/> : 
+			<c:out value="${h.value}" />
+		</c:forEach>
+
+		<!-- 주의사항 : JavaBean Component 규칙 준수해야함 vo.num ==> vo.getNum() -->
+		<c:forEach var="vo" items="${requestScope.array}">
+		  <tr align=center>
+			<TD width=5% bgcolor=#eeeeee>${vo.num}</TD> 
+			<TD width=15% bgcolor=#eeeeee> 
+				<a href="main?action=VIEW&num=${num}">${vo.name}</a>
+			</TD>
+			<TD width=%10 bgcolor=#eeeeee>${vo.address}</TD>		
+		  </tr>
+		</c:forEach>
+
+		<c:forEach var="vo" items="${requestScope.array}">
+		  <tr align=center>
+			<TD width=5% bgcolor=#eeeeee>
+				<input type="text" name="num" value="${vo.num}" readonly >
+				&nbsp;[읽기전용]
+			</TD> 
+			
+			<TD width=15% bgcolor=#eeeeee> 
+			  <input type="text" name="name" value="${vo.name}">	
+			</TD>
+			
+			<TD width=%10 bgcolor=#eeeeee>
+				<input type="text" name="address" value="${vo.address}">				
+			</TD>		
+		  </tr>
+		</c:forEach>
+		
+	--	<forTokens>
+
+##	URL 관리
+	--	<import>
+	--	<param>
+	--	<redirect>
+	--	<url>
+
+## functions jstl
+fn:contains(string, sbustring)
+string이 substring을 포함하면 return true 반환
+
+fn:containsIgnoreCase(string, sbustring)
+대소문자 관계없이 string이 substring을 포함하면 return true 반환
+
+fn:startsWith(string, prefix)
+string이 prefix로 시작하면 return True
+
+fn:endsWith(string, suffix)
+string이 suffix로 끝나면 return True
+
+fn:escapeXml(string)
+stting에 XML과 HTML에서 < >& ' " 문자들이 있으면, XML엔티티 코드로 바꿔준뒤 문자열 반환
+
+fn:indexOf(string, sbustring)
+string에서 substring이 처음으로 나타나는 인덱스 반환
+ 
+fn:split(string, separator)
+string내의 문자열 separetor에 따라 나누어서 배열로 구성해서 반환
+
+fn:join(array, separator)
+array요소들을 separator를 구분자로 하여 연결해서 반환
+
+fn:length(item)
+item이 배열이나 컬렉션이면 요소의 개수를 문자열이면 문자의 개수를 반환
+
+fn:replace(string, before, after)
+string내에 있는 before 문자열을 after 문자열로 모두 변경해서 반환
+
+fn:substring(string, begin, end)
+string에서 begin인덱스에서 시작해서 end인덱스에 끝나는 부분의 문자열 반환
+
+fn:substringAfter(string, sbustring)
+string에서 substring이 나타나는 이후의 문자열 반환
+
+fn:substringBefore(string, sbustring)
+string에서 substring이 나타나는 이전의 문자열 반환
+
+fn:toLowerCase(string)
+string을 모두 소문자로 변경 후 리턴
+
+fn:toUpperCase(string)
+string을 모두 대문자로 변경 후 리턴
+
+fn:trim(string)
+string앞뒤의 공백을 모두 제거한 후 반환
+
+
+## JSTL Sample code:
+-- (1) WEB-INF\lib> 폴더에 tag lib copy : jstl-xx.jar
+-- (2) jsp 페이지에 지시어태그로 설정
+		<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+-- (3) jsp 페이지에서 jstl 태그사용
+		<지정한prefix명:jslt태그명 속성명="속성값" />
+
+
+## sample code
+<%
+	if(session.getAttribute("userid") == null) {
+		request.setAttribute("message", "회원전용 서비스입니다. 로그인후 사용하시기 바랍니다.");
+		request.getRequestDispatcher("error.jsp").forward(request, response);
+	}
+%>
+
+<c:if test="${empty sessionScope.userid}">
+	<c:set var="message" value="회원전용 서비스입니다. 로그인후 사용하시기 바랍니다." 
+			scope="request" />
+	<jsp:forward page="error.jsp" />		
+</c:if>
+
+<%
+	String title = request.getAttribute("title");
+	if(title == null) {
+%>
+		전체회원 조회
+<%
+	} else {
+%>
+		<%= title %>
+<%
+	}
+%>
+
+<c:set var="title" value="${requestScope.title}"/>
+<c:if test="${empty title}">전체회원 조회</c:if>
+<c:if test="${not empty title}">${title}</c:if>
+
+<c:choose>
+	<c:when test="${empty title}">전체회원 조회</c:when>
+	<c:when test="${not empty title}">${title}</c:when>
+</c:choose>
+
+<c:choose>
+	<c:when test="${empty title}">전체회원 조회</c:when>
+	<c:otherwise>${title}</c:otherwise>
+</c:choose>
+
+-- functions 
+<li>fn:toUpperCase >> ${fn:toUpperCase(data)}</li>
+<li>fn:toLowerCase >> ${fn:toLowerCase(data)}</li>
+<li>fn:substring >> ${fn:substring(data, 7, 21)}</li>
+<li>fn:substringBefore >> ${fn:substringBefore(data, "://")}</li>
+<li>fn:substringAfter >> ${fn:substringAfter(data, "://")}</li>
+<li>fn:replace >> ${fn:replace(data, "LOCALHOST:8080", host)}</li>
+<li>fn:trim >> ${fn:trim(data)}</li>
+		
+-- import url
+<!-- "hello?name=홍길동"의 url 접근하여 해당 페이지의 응답결과를 사용 -->
+<c:import url="hello" charEncoding="utf-8">
+    <c:param name="name" value="홍길동" />
+</c:import>
+
+
+-- url
+<h1>URL 만들기</h1>
+<h2>
+	<!-- 현재 위치에 "list.jsp?keyword=memberList&page=1"의 형식으로 URL을 출력 -->
+	<c:url value="list.jsp">
+		<c:param name="keyword" value="memberList" />
+		<c:param name="page" value="1" />
+	</c:url>
+</h2>
+
+<h3>
+	<!-- "list.jsp?keyword=memberList&page=1"의 형식으로 URL을 생성한 뒤, next_url 이라는 변수에 저장 -->
+	<c:url value="list.jsp" var="next_url">
+		<c:param name="keyword" value="memberList" />
+		<c:param name="page" value="1" />			
+	</c:url>
+</h3>
+<h4><a href="${next_url}">회원조회 이동</a></h4>
+
+-- forTokens : 구분자 토큰링
+<!-- String[] token = list.split(",") 처리 후, token의 항목 수 만큼 반복 -->
+<c:forTokens items="${list}" delims="," var="token">
+	<li>${token}</li>
+</c:forTokens>
+
+-- for	
+	>> varStatus="status"는 반복문의 상황을 알 수 있는 값을 status 객체에 설정
+	>> status.count는 반복 횟수를 의미 : 1, 2, ...x
+	>> status.index는 배열객체의 해당 항목에 대한 인덱스 
+	
+<c:set var="first" value="1" />
+<c:set var="last" value="9" />
+<c:set var="level" value="2" />
+<!-- for(int i=first; i<=last; i++) -->
+<c:forEach var="i" begin="${first}" end="${last}" varStatus="status">
+	<p>[${status.count}/${last}] ${level} x ${i} = ${level * i}</p>
+</c:forEach>
+	
+	>> 결과 : 3단 출력
+	[1/9] 2 x 1 = 2
+	[2/9] 2 x 2 = 4
+	...
+	[9/9] 2 x 9 = 18
+
+-- for 배열
+<!-- 배열을 items 만큼 가각 item을 variable-name에 순차 저장 -->
+<!-- status.index는 현재 배열 항목에 대한 인덱스값 -->
+<c:forEach var="variable-name" items="${array-name}" varStatus="status">
+	<li>[${status.index}] = ${variable-name}</li>
+</c:forEach>
+	
+	>> 결과 : 
+		[0] xxx
+		[1] xxx
+		...
+
+-- for Collection List
+		// Collection List 객체 생성
+		List<Member> list = new ArrayList<Member>();
+
+		// List 객체에 JavaBeans의 객체를 이름표를 적용하여 추가한다.
+		list.add(new Member("user01", "홍길동"));
+		list.add(new Member("user01", "강감찬"));
+		list.add(new Member("user01", "이순신"));
+		
+		// list를 request객체에 등록한다.
+		request.setAttribute("list", list);		
+
+		<c:forEach var="dto" items="${list}" varStatus="status">
+			<li>[${status.index}] = ${dto}</li>
+		</c:forEach>
+		
+-- for Collection Map
+
+		// Collection Map 객체 생성
+		Map<String, Member> map = new HashMap<String, Member>();
+
+		// Map 객체에 JavaBeans의 객체를 이름표를 적용하여 추가한다.
+		map.put("user01", new Member("user01", "홍길동"));
+		map.put("user02", new Member("user01", "강감찬"));
+		map.put("ueser03", new Member("user01", "이순신"));
+		
+		// Map객체를 request객체에 등록한다.
+		request.setAttribute("map", map);		
+			
+
+		<!-- map 객체를 스캔하면서 각 항목을 k에 저장한다 -->
+		<c:forEach var="dto" items="${map}" varStatus="status">
+			<!-- 
+				status.index는 현재 반복되고 있는 인덱스 번호
+				반복처리될때 마다 map.key와 map.value에 객체가 저장
+			 -->
+			<li>
+				map[${status.index}] ${map.key} = ${map.value.memberId}/${map.value.name}
+			</li>
+		</c:forEach>
+	
+-- JavaBean 사용
+	<!-- Beans의 값을 사용하기. 멤버변수의 이름으로 연결된 getter를 호출한다. -->
+	<h1>${dto.memberId}님은 ${dto.name} 입니다.</h1>
+
+	<!-- Beans의 값을 변경하기. 멤버변수의 이름으로 연결된 setter를 호출한다. -->
+	<c:set target="${dto}" property="memberId" value="user99"/>
+	<c:set target="${dto}" property="name" value="김은경"/>
+
+	<h1>${dto.memberId}님은 ${dto.name} 입니다.</h1>
+	
+	
+## war
+-- 웹 어플리케이션 아카이브파일
+-- 서버에 배포하기위한 deploy) 컨텍스트이름.war 배포파일 
+-- jdk\bin> jar.exe (.class 등 압축파일)
+-- 확장자 : 
+	>> *.jar (라이브러리 클래스묶음, 어플리케이션 실행가능한 파일)
+	>> *.war (웹어플리케이션 배포파일)
+	>> *.ear (EJB 어플리케이션 배포파일)
+-- 실행 
+	>> dos> jar cvfM ...
+	>> eclipse> export
+
+-- war 배포 폴더 위치 : 
+	>> C:\apache-tomcat-8.5.63\webapps> 컨텍스트이름.war
+	>> tomcat 서버 구동시에 자동으로 "컨텍스트이름.war" 압축 해제 설치
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	

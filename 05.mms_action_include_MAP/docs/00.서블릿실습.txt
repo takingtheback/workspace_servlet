@@ -1,0 +1,41 @@
+## 서블릿/JSP 실습
+
+## 회원관리 웹 기능 목록
+-- 가입, 로그인, 로그아웃, 내정보조회, 내정보변경
+-- 전체회원조회 : 관리자, 상세조회
+
+
+## package 및 class 기본 구조
+-- com.work.controller.MemberServlet
+-- com.work.service.MemberService
+-- com.work.dao.MemberDao
+-- com.work.dto.Member
+
+
+## 1일차
+	>> 환경구축, 서블릿 요청-응답흐름
+	>> 로그인 : 요청데이터 가져오기
+	>> 서블릿 작성 절차
+	>> 응답처리
+	>> servlet 2.x
+	
+	
+## 2일차
+	>> 데이터베이스 연결
+	>> 세션처리 : 로그인, 회원가입
+	>> FrontController, Query String
+	>> 페이지 이동
+	>> servlet 3.x
+	>> Annotation
+	
+## 3일차
+	>> JSP, EL, JSTL
+	>> war 배포
+	
+## 4일차
+	>> 회원관리 완성 실습
+	>> 게시글 관리 추가
+	
+
+
+

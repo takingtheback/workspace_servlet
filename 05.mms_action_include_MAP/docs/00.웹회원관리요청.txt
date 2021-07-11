@@ -1,0 +1,56 @@
+## ---------------------------------
+## 로그인 요청 서비스 절차
+## ---------------------------------
+  1. 로그인 요청(아이디, 비밀번호) : login.jsp (action="login")
+  
+  2-1. 요청객체에 대한 한글 인코딩 설정 : 로그인 한글입력??
+  2. 데이터 추출 : request.getParameter("name");
+  
+  3. 데이터 검증 : view.js 검증, hthml5 required 속성 => 이유???
+  
+  4. 모델(Model) 요청의뢰(검증받은데이터)
+  5. Model로부터 응답결과받아서 응답위한 설정 : setAttribute(key, value)
+  
+  6-2. 응답 서블릿 페이지 코드 구현 전송
+  	>> 응답을 위한 mime-type 및 한글인코딩 설정
+   >> 응답을 위한 출력스트림 객체  
+  	>> 응답 출력스트림 객체를 통해서 html 동적 페이지 응답 출력
+  	>> 응답 출력스트림 자원해제
+  
+  6. 응답 페이지 이동 : JSP
+  	>> forward
+  	>> redirect
+
+ 
+## 시작페이지 : index.jsp
+## 로그인 페이지 : login.jsp
+
+## 서비스 메서드 재정의 순서(절차)
+-- 1. 요청객체에 대한 한글 인코딩 설정 : utf-8
+	request.setCharacterEncoding("utf-8");
+		
+-- 2. 요청시에 전달받은 요청데이터 가져오기
+	>> view form 입력항목  name="key"
+	>> String	getParameter(String name) : 해당 요청데이터 단일값
+	>> String[]	getParameterValues(String name) : 해당 요청데이터 다중값
+	
+	>> Map<String,String[]>	getParameterMap() : 전체 요청데이터
+	>> Enumeration<String>	getParameterNames() : 전체 요청데이터에 대한 name
+
+	>> form 입력항목 다중값 : checkbox, multiple로 지정한 select
+		
+-- 3. 응답을 위한 mime-type 및 한글인코딩 설정
+	>> response.setContentType("text/html; charset=UTF-8");
+	
+-- 4. 응답을 위한 출력스트림 객체 : text/html => character 단위 출력스트림
+	>> java.io.PrintWriter	getWriter() : character 단위 출력스트림
+	>> ServletOutputStream	getOutputStream() : byte 단위 출력스트림 
+
+-- 5. 응답 출력스트림 객체를 통해서 html 동적 페이지 응답 출력
+	>> out.println("<html><head></head><body><h3>...</h3></body></html>");
+
+-- 6. 응답 출력스트림 자원해제
+	>> out.close();
+
+
+
